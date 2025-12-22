@@ -111,9 +111,10 @@
 </head>
 <body>
 
-    <header>
+   <header>
         <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6;">Protocollo Clinico Cactus 2026</span>
         <h1>REFLUSSI DI COSCIENZA</h1>
+        <div class="subtitle">Letture per persone con ansia che bevono comunque caffè</div>
     </header>
 
     <div id="final-prize">🏆 TUMMY ACHE SURVIVOR 🏆</div>
@@ -276,9 +277,41 @@
         </div>
     </div>
 
-    <footer style="margin-top: 50px; opacity: 0.5; font-size: 0.7rem; padding-bottom: 30px;">
-        GDL JULIE DEMAR - 2026 🌵
+<footer style="margin-top: 50px; opacity: 0.5; font-size: 0.7rem; padding-bottom: 30px; line-height: 1.2;">
+        GDL JULIE DEMAR - 2026 🌵 <br>
+        <span style="font-size: 0.6rem;">
+            I tuoi progressi sono salvati localmente sul tuo browser.<br>
+            Nessun dato viene raccolto, inviato a server o condiviso con terzi.
+        </span>
     </footer>
 
+    <script>
+        function saveProgress() {
+            const inputs = document.querySelectorAll('input');
+            const status = {};
+            inputs.forEach(input => {
+                if (input.type === 'checkbox' || input.type === 'radio') {
+                    status[input.id] = input.checked;
+                }
+            });
+            localStorage.setItem('gdl_2026_progress', JSON.stringify(status));
+        }
+
+        function loadProgress() {
+            const savedStatus = JSON.parse(localStorage.getItem('gdl_2026_progress'));
+            if (savedStatus) {
+                Object.keys(savedStatus).forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.checked = savedStatus[id];
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('change', saveProgress);
+        window.onload = loadProgress;
+    </script>
+
 </body>
-</html>
+</html> 
