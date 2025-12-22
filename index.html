@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDL 2026 - Reflussi di Coscienza</title>
+    <style>
+        :root {
+            --bg-color: #d7ccc8;
+            --card-bg: #fdfaf6;
+            --accent-stamp: #92D698;
+            --text-main: #5d4037;
+            --line-color: #e0d7d3;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-main);
+            text-align: center; padding: 20px 10px; margin: 0; 
+        }
+
+        header { 
+            background: rgba(255, 255, 255, 0.4); padding: 30px 20px; 
+            margin: 0 auto 30px; max-width: 800px; border-radius: 25px;
+            backdrop-filter: blur(5px);
+        }
+
+        .grid { 
+            display: grid; gap: 20px; margin: 0 auto; max-width: 1100px;
+            grid-template-columns: repeat(2, 1fr); 
+        }
+
+        @media (min-width: 768px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 30px; } }
+
+        .status-check { display: none; }
+
+        .card { 
+            background: var(--card-bg); padding: 15px; display: flex; 
+            flex-direction: column; position: relative; border-radius: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05); transition: all 0.3s ease;
+        }
+        
+        .book-box { 
+            width: 100%; height: 250px; display: flex; align-items: center; 
+            justify-content: center; position: relative; 
+            background: #fff; overflow: hidden; border-radius: 18px;
+        }
+
+        .book-img { max-width: 85%; max-height: 85%; transition: 0.4s; }
+        .card-divider { height: 1px; background-color: var(--line-color); margin: 15px 10px 10px 10px; }
+
+        /* BADGE/TIMBRI - FIX PER TESTO LUNGO */
+        .status-badge {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-12deg);
+            padding: 10px; font-family: "Courier New", Courier, monospace;
+            font-weight: 900; text-transform: uppercase; font-size: 0.5rem;
+            line-height: 1.2; background: rgba(255, 255, 255, 0.96);
+            display: none; z-index: 10; width: 80%;
+            pointer-events: none; letter-spacing: -0.2px;
+            box-sizing: border-box;
+            word-wrap: break-word; /* Forza il testo a capo */
+        }
+
+        .stamp-done { color: var(--accent-stamp); border: 3px double var(--accent-stamp); box-shadow: 0 0 2px var(--accent-stamp); }
+        .stamp-done::after { content: " 🌵"; font-size: 0.7rem; }
+        .stamp-reading { color: #f57f17; border: 3px dashed #fbc02d; }
+
+        .med-name { font-weight: 800; font-size: 0.9rem; text-transform: uppercase; margin: 0; }
+        .med-period { font-size: 0.65rem; text-transform: uppercase; opacity: 0.5; letter-spacing: 1px; margin-top: 4px; }
+
+        /* CONTROLLI */
+        .controls { display: flex; gap: 5px; justify-content: center; margin-top: 10px; }
+        .btn-status { 
+            font-size: 0.6rem; padding: 6px 4px; border-radius: 10px; 
+            cursor: pointer; border: 1px solid var(--line-color); background: white;
+            text-transform: uppercase; font-weight: bold; transition: 0.2s;
+            flex: 1;
+        }
+
+        /* RATING */
+        .rating-container { margin-top: 12px; display: none; justify-content: center; flex-direction: row-reverse; }
+        .rating-container input { display: none; }
+        .rating-container label { font-size: 1.3rem; cursor: pointer; opacity: 0.2; filter: grayscale(1); transition: 0.2s; margin: 0 2px;}
+        .rating-container label:hover, .rating-container label:hover ~ label, .rating-container input:checked ~ label { opacity: 1; filter: grayscale(0); }
+
+        /* LOGICA STATI */
+        .check-reading:checked ~ .card .stamp-reading { display: block; }
+        .check-reading:checked ~ .card .book-img { filter: sepia(0.5); opacity: 0.6; }
+        .check-reading:checked ~ .card .btn-reading { background: #fff9c4; border-color: #fbc02d; }
+
+        .check-done:checked ~ .card { background: #e8f5e9; }
+        .check-done:checked ~ .card .stamp-done { display: block; animation: stamp-anim 0.2s ease-out; }
+        .check-done:checked ~ .card .book-img { opacity: 0.15; filter: grayscale(1) blur(1px); }
+        .check-done:checked ~ .card .rating-container { display: flex; }
+        
+        /* Sparizione elementi quando completato */
+        .check-done:checked ~ .card .stamp-reading { display: none !important; }
+        .check-done:checked ~ .card .btn-reading { display: none !important; }
+        .check-done:checked ~ .card .btn-done { background: #c8e6c9; border-color: var(--accent-stamp); flex: none; width: 100%; }
+
+        @keyframes stamp-anim {
+            0% { transform: translate(-50%, -50%) rotate(-12deg) scale(2); opacity: 0; }
+            100% { transform: translate(-50%, -50%) rotate(-12deg) scale(1); opacity: 0.95; }
+        }
+
+        #final-prize { display: none; background: #fff176; padding: 25px; margin: 0 auto 30px; border-radius: 20px; max-width: 800px; border: 3px dashed #fbc02d; font-weight: bold;}
+        body:has(#done0:checked):has(#done1:checked):has(#done2:checked):has(#done3:checked):has(#done4:checked):has(#done5:checked) #final-prize { display: block !important; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6;">Protocollo Clinico Cactus 2026</span>
+        <h1>REFLUSSI DI COSCIENZA</h1>
+    </header>
+
+    <div id="final-prize">🏆 TUMMY ACHE SURVIVOR 🏆</div>
+
+    <div class="grid">
+        <div class="card-container">
+            <input type="checkbox" id="read0" class="status-check check-reading">
+            <input type="checkbox" id="done0" class="status-check check-done">
+            <div class="card">
+                <div class="book-box">
+                    <div class="status-badge stamp-reading">In fase di<br>somministrazione</div>
+                    <div class="status-badge stamp-done">I will be a problem in every lifetime</div>
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXP_QZV5X-zRlrAgB0nkbBlzo1D6Yowwf3NQ&s" class="book-img">
+                </div>
+                <div class="card-divider"></div>
+                <div class="med-name">Figacciux<sup>®</sup></div>
+                <div class="med-period">Gennaio - Febbraio</div>
+                <div class="controls">
+                    <label for="read0" class="btn-status btn-reading">📖 In lettura</label>
+                    <label for="done0" class="btn-status btn-done">✅ Letto</label>
+                </div>
+                <div class="rating-container">
+                    <input type="radio" name="rat0" id="r0-5"><label for="r0-5">💊</label>
+                    <input type="radio" name="rat0" id="r0-4"><label for="r0-4">💊</label>
+                    <input type="radio" name="rat0" id="r0-3"><label for="r0-3">💊</label>
+                    <input type="radio" name="rat0" id="r0-2"><label for="r0-2">💊</label>
+                    <input type="radio" name="rat0" id="r0-1"><label for="r0-1">💊</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <input type="checkbox" id="read1" class="status-check check-reading">
+            <input type="checkbox" id="done1" class="status-check check-done">
+            <div class="card">
+                <div class="book-box">
+                    <div class="status-badge stamp-reading">In fase di<br>somministrazione</div>
+                    <div class="status-badge stamp-done">Awake, but at what cost</div>
+                    <img src="https://www.ibs.it/images/9788806219192_0_0_0_0_0.jpg" class="book-img">
+                </div>
+                <div class="card-divider"></div>
+                <div class="med-name">Esistazol<sup>®</sup></div>
+                <div class="med-period">Marzo - Aprile</div>
+                <div class="controls">
+                    <label for="read1" class="btn-status btn-reading">📖 In lettura</label>
+                    <label for="done1" class="btn-status btn-done">✅ Letto</label>
+                </div>
+                <div class="rating-container">
+                    <input type="radio" name="rat1" id="r1-5"><label for="r1-5">💊</label>
+                    <input type="radio" name="rat1" id="r1-4"><label for="r1-4">💊</label>
+                    <input type="radio" name="rat1" id="r1-3"><label for="r1-3">💊</label>
+                    <input type="radio" name="rat1" id="r1-2"><label for="r1-2">💊</label>
+                    <input type="radio" name="rat1" id="r1-1"><label for="r1-1">💊</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <input type="checkbox" id="read2" class="status-check check-reading">
+            <input type="checkbox" id="done2" class="status-check check-done">
+            <div class="card">
+                <div class="book-box">
+                    <div class="status-badge stamp-reading">In fase di<br>somministrazione</div>
+                    <div class="status-badge stamp-done">Sorry for not texing back, i forgot i was real</div>
+                    <img src="https://m.media-amazon.com/images/I/61lME-Io+HL._AC_UF1000,1000_QL80_.jpg" class="book-img">
+                </div>
+                <div class="card-divider"></div>
+                <div class="med-name">Identiflux<sup>®</sup></div>
+                <div class="med-period">Maggio - Giugno</div>
+                <div class="controls">
+                    <label for="read2" class="btn-status btn-reading">📖 In lettura</label>
+                    <label for="done2" class="btn-status btn-done">✅ Letto</label>
+                </div>
+                <div class="rating-container">
+                    <input type="radio" name="rat2" id="r2-5"><label for="r2-5">💊</label>
+                    <input type="radio" name="rat2" id="r2-4"><label for="r2-4">💊</label>
+                    <input type="radio" name="rat2" id="r2-3"><label for="r2-3">💊</label>
+                    <input type="radio" name="rat2" id="r2-2"><label for="r2-2">💊</label>
+                    <input type="radio" name="rat2" id="r2-1"><label for="r2-1">💊</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <input type="checkbox" id="read3" class="status-check check-reading">
+            <input type="checkbox" id="done3" class="status-check check-done">
+            <div class="card">
+                <div class="book-box">
+                    <div class="status-badge stamp-reading">In fase di<br>somministrazione</div>
+                    <div class="status-badge stamp-done">Don’t mess with me, i will start crying</div>
+                    <img src="https://m.media-amazon.com/images/I/616sEwW93PL.jpg" class="book-img">
+                </div>
+                <div class="card-divider"></div>
+                <div class="med-name">Socialex<sup>®</sup></div>
+                <div class="med-period">Luglio - Agosto</div>
+                <div class="controls">
+                    <label for="read3" class="btn-status btn-reading">📖 In lettura</label>
+                    <label for="done3" class="btn-status btn-done">✅ Letto</label>
+                </div>
+                <div class="rating-container">
+                    <input type="radio" name="rat3" id="r3-5"><label for="r3-5">💊</label>
+                    <input type="radio" name="rat3" id="r3-4"><label for="r3-4">💊</label>
+                    <input type="radio" name="rat3" id="r3-3"><label for="r3-3">💊</label>
+                    <input type="radio" name="rat3" id="r3-2"><label for="r3-2">💊</label>
+                    <input type="radio" name="rat3" id="r3-1"><label for="r3-1">💊</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <input type="checkbox" id="read4" class="status-check check-reading">
+            <input type="checkbox" id="done4" class="status-check check-done">
+            <div class="card">
+                <div class="book-box">
+                    <div class="status-badge stamp-reading">In fase di<br>somministrazione</div>
+                    <div class="status-badge stamp-done">I will not explain myself, i have no idea either</div>
+                    <img src="https://www.ibs.it/images/9788804732495_0_0_536_0_75.jpg" class="book-img">
+                </div>
+                <div class="card-divider"></div>
+                <div class="med-name">Medianorm<sup>®</sup></div>
+                <div class="med-period">Settembre - Ottobre</div>
+                <div class="controls">
+                    <label for="read4" class="btn-status btn-reading">📖 In lettura</label>
+                    <label for="done4" class="btn-status btn-done">✅ Letto</label>
+                </div>
+                <div class="rating-container">
+                    <input type="radio" name="rat4" id="r4-5"><label for="r4-5">💊</label>
+                    <input type="radio" name="rat4" id="r4-4"><label for="r4-4">💊</label>
+                    <input type="radio" name="rat4" id="r4-3"><label for="r4-3">💊</label>
+                    <input type="radio" name="rat4" id="r4-2"><label for="r4-2">💊</label>
+                    <input type="radio" name="rat4" id="r4-1"><label for="r4-1">💊</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <input type="checkbox" id="read5" class="status-check check-reading">
+            <input type="checkbox" id="done5" class="status-check check-done">
+            <div class="card">
+                <div class="book-box">
+                    <div class="status-badge stamp-reading">In fase di<br>somministrazione</div>
+                    <div class="status-badge stamp-done">Trauma? Oh you mean MY LORE?</div>
+                    <img src="https://www.adelphi.it/spool/og__id296_w800__1x.jpg" class="book-img">
+                </div>
+                <div class="card-divider"></div>
+                <div class="med-name">Colpax<sup>®</sup></div>
+                <div class="med-period">Novembre - Dicembre</div>
+                <div class="controls">
+                    <label for="read5" class="btn-status btn-reading">📖 In lettura</label>
+                    <label for="done5" class="btn-status btn-done">✅ Letto</label>
+                </div>
+                <div class="rating-container">
+                    <input type="radio" name="rat5" id="r5-5"><label for="r5-5">💊</label>
+                    <input type="radio" name="rat5" id="r5-4"><label for="r5-4">💊</label>
+                    <input type="radio" name="rat5" id="r5-3"><label for="r5-3">💊</label>
+                    <input type="radio" name="rat5" id="r5-2"><label for="r5-2">💊</label>
+                    <input type="radio" name="rat5" id="r5-1"><label for="r5-1">💊</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer style="margin-top: 50px; opacity: 0.5; font-size: 0.7rem; padding-bottom: 30px;">
+        GDL JULIE DEMAR - 2026 🌵
+    </footer>
+
+</body>
+</html>
