@@ -28,7 +28,6 @@
             cursor: pointer !important;
         }
 
-        /* HEADER */
         header { 
             margin: 30px auto 50px; 
             max-width: 500px; 
@@ -46,7 +45,6 @@
             margin: 0 auto;
         }
 
-        /* GRID */
         .grid { 
             display: grid; 
             gap: 20px; 
@@ -113,55 +111,71 @@
         .rating-container { margin-top: 12px; display: none; justify-content: center; flex-direction: row-reverse; }
         .rating-container input { display: none; }
         .rating-container label { font-size: 1.3rem; opacity: 0.2; filter: grayscale(1); transition: 0.2s; margin: 0 2px;}
-        .rating-container label:hover, .rating-container label:hover ~ label, .rating-container input:checked ~ label { opacity: 1; filter: grayscale(0); }
 
-        /* BANNER FINALE CON EFFETTO GLITTER AUTOMATICO (PER MOBILE E PC) */
+        /* BANNER FINALE CON GLITTER RITAGLIATO */
         #final-prize { 
             display: none; 
             margin: -30px auto 40px; 
             max-width: 800px; 
             padding: 0 10px; 
             position: relative;
-            overflow: hidden;
-            border-radius: 20px;
+            transition: transform 0.3s ease; /* Zoom per PC */
+        }
+
+        #final-prize:hover {
+            transform: scale(1.03); /* Micro zoom in hover */
+        }
+
+        .banner-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
         }
 
         .banner-img { 
             width: 100%; 
             height: auto; 
             display: block;
-            position: relative;
-            z-index: 1;
         }
 
-        /* La "lama di luce" glitterata */
-        #final-prize::after {
+        /* Il glitter ritagliato sulla sagoma */
+        .glitter-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            /* USA L'IMMAGINE COME MASCHERA: il glitter si vede solo dove c'è il disegno */
+            -webkit-mask-image: url('Banner_finale.png');
+            mask-image: url('Banner_finale.png');
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+        }
+
+        .glitter-overlay::after {
             content: "";
             position: absolute;
-            top: -50%;
-            left: -100%;
-            width: 30%;
-            height: 200%;
+            top: -50%; left: -100%; width: 40%; height: 200%;
             background: linear-gradient(
                 to right, 
                 rgba(255,255,255,0) 0%, 
-                rgba(255,255,255,0.6) 50%, 
+                rgba(255,255,255,0.7) 50%, 
                 rgba(255,255,255,0) 100%
             );
             transform: rotate(25deg);
-            z-index: 2;
-            pointer-events: none;
-            /* L'animazione corre sempre, così si vede anche su mobile senza hover */
             animation: glitter-swipe 4s infinite ease-in-out;
         }
 
         @keyframes glitter-swipe {
             0% { left: -100%; }
-            20% { left: 120%; } /* Passa velocemente all'inizio */
-            100% { left: 120%; } /* Pausa lunga prima del prossimo luccichio */
+            25% { left: 120%; } 
+            100% { left: 120%; } 
         }
 
-        /* Stati */
+        /* Stati Card */
         .check-reading:checked ~ .card .stamp-reading { display: block; }
         .check-reading:checked ~ .card .book-img { filter: sepia(0.5); opacity: 0.6; }
         .check-done:checked ~ .card { background: #e8f5e9; }
@@ -184,7 +198,10 @@
     </header>
 
     <div id="final-prize">
-        <img src="Banner_finale.png" alt="Tummy Ache Survivor" class="banner-img">
+        <div class="banner-container">
+            <img src="Banner_finale.png" alt="Tummy Ache Survivor" class="banner-img">
+            <div class="glitter-overlay"></div>
+        </div>
     </div>
 
     <div class="grid">
@@ -229,7 +246,7 @@
         <div style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
             <div style="margin: 20px 0; font-size: 0.7rem; opacity: 0.5;">
                 <p>GDL di @Julie.Demar</p>
-                <p>I tuoi progressi sono salvati automaticamente nella cache locale del tuo browser. Nessuno dei tuoi dati viene salvato. </p>
+                <p>I tuoi progressi sono salvati automaticamente nella cache locale del tuo browser.</p>
             </div>
             <p style="font-size: 0.6rem; opacity: 0.4; text-transform: uppercase;">© 2026</p>
         </div>
@@ -250,9 +267,7 @@
             const inputs = document.querySelectorAll('input');
             const status = {};
             inputs.forEach(input => { 
-                if (input.type === 'checkbox' || input.type === 'radio') {
-                    if (input.id) status[input.id] = input.checked;
-                }
+                if (input.id) status[input.id] = (input.type === 'checkbox' || input.type === 'radio') ? input.checked : input.value;
             });
             localStorage.setItem('gdl_2026_progress_v2', JSON.stringify(status));
             updateVictoryState();
