@@ -28,9 +28,9 @@
             cursor: pointer !important;
         }
 
-        /* HEADER */
+        /* HEADER DESKTOP */
         header { 
-            margin: 30px auto 10px; 
+            margin: 30px auto 50px; /* Aumentato il margine inferiore a 50px per staccarlo dalle card */
             max-width: 500px; 
             padding: 0 10px;
             position: relative;
@@ -56,11 +56,17 @@
             align-items: stretch;
         }
 
+        /* CORREZIONE MOBILE */
         @media (max-width: 768px) {
-            header { margin: 10px auto 3px; }
-            .grid { margin-top: -15px; }
-            /* Aggiunge respiro tra titolo e banner su mobile */
-            #final-prize { margin: 15px auto 30px !important; } 
+            header {
+                margin: 20px auto 40px; /* Margine generoso anche su mobile */
+            }
+            .grid {
+                margin-top: 0; /* Rimosso margine negativo per non schiacciare */
+            }
+            #final-prize { 
+                margin: -20px auto 40px !important; /* Il banner si "mangia" parte dello spazio vuoto quando appare */
+            }
         }
 
         @media (min-width: 768px) { 
@@ -147,7 +153,7 @@
         /* BANNER FINALE */
         #final-prize { 
             display: none; 
-            margin: -20px auto 30px; /* Ottimale per desktop */
+            margin: -30px auto 40px; /* Margine negativo per bilanciare lo spazio extra dell'header */
             max-width: 800px; 
             padding: 0 10px; 
         }
@@ -156,7 +162,6 @@
             width: 100%; 
             height: auto; 
             display: block;
-            /* L'ombra segue la sagoma del PNG */
             filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
             transition: transform 0.3s ease, filter 0.3s ease;
         }
