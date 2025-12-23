@@ -52,6 +52,7 @@
             margin: 0 auto; 
             max-width: 1100px; 
             grid-template-columns: repeat(2, 1fr); 
+            align-items: stretch; /* Forza le card della stessa riga ad avere la stessa altezza */
         }
 
         /* CORREZIONE MOBILE */
@@ -74,6 +75,8 @@
             flex-direction: column; position: relative; border-radius: 25px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.05); 
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%; /* Occupa tutto lo spazio verticale della riga */
+            box-sizing: border-box;
         }
 
         .card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); }
@@ -109,21 +112,29 @@
             text-transform: uppercase; 
             opacity: 0.4; 
             letter-spacing: 1.5px; 
-            margin-bottom: 15px; 
+            margin-bottom: 10px; /* Ridotto per avvicinare ai libri */
             display: block;
             line-height: 1;
+            height: 12px;
         }
 
         .med-prescription { 
             font-size: 0.75rem; 
             font-style: italic; 
             opacity: 0.8; 
-            margin-top: 8px; 
+            margin-top: 0px; 
             line-height: 1.3;
-            min-height: 34px;
+            /* Uniforma l'altezza delle descrizioni */
+            min-height: 45px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .controls { display: flex; gap: 5px; justify-content: center; margin-top: 10px; }
+        .controls { 
+            display: flex; gap: 5px; justify-content: center; margin-top: auto; /* Spinge i bottoni sempre in fondo */
+            padding-top: 10px;
+        }
         .btn-status { 
             font-size: 0.6rem; padding: 6px 4px; border-radius: 10px; 
             border: 1px solid var(--line-color); background: white;
@@ -135,19 +146,6 @@
         .rating-container input { display: none; }
         .rating-container label { font-size: 1.3rem; opacity: 0.2; filter: grayscale(1); transition: 0.2s; margin: 0 2px;}
         .rating-container label:hover, .rating-container label:hover ~ label, .rating-container input:checked ~ label { opacity: 1; filter: grayscale(0); }
-
-        /* BANNER FINALE IMMAGINE */
-        #final-prize { 
-            display: none; 
-            margin: 0 auto 30px; 
-            max-width: 600px; 
-            padding: 0 10px;
-        }
-        .banner-img {
-            width: 100%;
-            height: auto;
-            border-radius: 20px;
-        }
 
         /* Stati */
         .check-reading:checked ~ .card .stamp-reading { display: block; }
@@ -163,6 +161,12 @@
             0% { transform: translate(-50%, -50%) rotate(-12deg) scale(2); opacity: 0; }
             100% { transform: translate(-50%, -50%) rotate(-12deg) scale(1); opacity: 0.95; }
         }
+
+        #final-prize { 
+            display: none; background: #e0f2f1; padding: 25px; margin: 0 auto 30px; 
+            border-radius: 20px; max-width: 800px; border: 3px dashed var(--accent-stamp); 
+            color: var(--text-main); font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -171,18 +175,15 @@
         <img src="header.png" alt="Reflusso di Coscienza" class="header-img">
     </header>
 
-    <div id="final-prize">
-        <img src="banner-finale.png" alt="Tummy Ache Survivor" class="banner-img">
-    </div>
+    <div id="final-prize">🏆 TUMMY ACHE SURVIVOR 🏆</div>
 
     <div class="grid">
         <script>
-            // Qui rimangono i tuoi dati aggiornati identici
             const books = [
                 { name: "FIGMED", period: "Gennaio - Febbraio", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXP_QZV5X-zRlrAgB0nkbBlzo1D6Yowwf3NQ&s", quote: "I will be a problem in every lifetime", presc: "In caso indecisione esistenziale acuta." },
                 { name: "Esistazol", period: "Marzo - Aprile", img: "https://www.ibs.it/images/9788806219192_0_0_0_0_0.jpg", quote: "Awake, but at what cost", presc: "In caso di rigetto improvviso della realtà." },
-                { name: "Lo Squalificato", period: "Maggio - Giugno", img: "https://m.media-amazon.com/images/I/61lME-Io+HL._AC_UF1000,1000_QL80_.jpg", quote: "Sorry for not texing back, i forgot i was real", presc: "In caso di identità instabile." },
-                { name: "Uno, Nessuno e Centomila", period: "Luglio - Agosto", img: "https://m.media-amazon.com/images/I/616sEwW93PL.jpg", quote: "Don’t mess with me, i will start crying", presc: "In caso di mascheramento emotivo cronico." },
+                { name: "Socialex", period: "Maggio - Giugno", img: "https://giuntialpunto.it/cdn/shop/products/d5884274a8a0b8359a182058dfa72758_2d0e4695-87f5-467b-8dac-2353ed5ce79d.jpg?v=1731981450", quote: "Don’t mess with me, i will start crying", presc: "In caso di mascheramento emotivo cronico." },
+                { name: "Identiflux", period: "Luglio - Agosto", img: "https://m.media-amazon.com/images/I/61lME-Io+HL._AC_UF1000,1000_QL80_.jpg", quote: "Sorry for not texing back, i forgot i was real", presc: "In caso di identità instabile." },
                 { name: "Medianorm", period: "Settembre - Ottobre", img: "https://www.ibs.it/images/9788804732495_0_0_536_0_75.jpg", quote: "I will not explain myself, i have no idea either", presc: "In caso di vita standard a lento soffocamento." },
                 { name: "Colpax", period: "Novembre - Dicembre", img: "https://www.adelphi.it/spool/og__id296_w800__1x.jpg", quote: "Trauma? Oh you mean MY LORE?", presc: "In caso di senso di colpa preinstallato." }
             ];
