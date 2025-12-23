@@ -59,7 +59,10 @@
         @media (max-width: 768px) {
             header { margin: 10px auto 3px; }
             .grid { margin-top: -15px; }
+            /* Aggiunge respiro tra titolo e banner su mobile */
+            #final-prize { margin: 15px auto 30px !important; } 
         }
+
         @media (min-width: 768px) { 
             .grid { grid-template-columns: repeat(3, 1fr); gap: 20px; } 
         }
@@ -141,10 +144,10 @@
         .rating-container label { font-size: 1.3rem; opacity: 0.2; filter: grayscale(1); transition: 0.2s; margin: 0 2px;}
         .rating-container label:hover, .rating-container label:hover ~ label, .rating-container input:checked ~ label { opacity: 1; filter: grayscale(0); }
 
-        /* BANNER FINALE AGGIORNATO */
+        /* BANNER FINALE */
         #final-prize { 
             display: none; 
-            margin: -20px auto 30px; /* Margine negativo per avvicinarlo al titolo */
+            margin: -20px auto 30px; /* Ottimale per desktop */
             max-width: 800px; 
             padding: 0 10px; 
         }
@@ -153,7 +156,7 @@
             width: 100%; 
             height: auto; 
             display: block;
-            /* Drop-shadow segue la sagoma del PNG trasparente */
+            /* L'ombra segue la sagoma del PNG */
             filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
             transition: transform 0.3s ease, filter 0.3s ease;
         }
