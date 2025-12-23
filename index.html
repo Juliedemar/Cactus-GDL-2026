@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GDL 2026 - Reflussi di Coscienza</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --bg-color: #d7ccc8;
@@ -11,9 +12,9 @@
             --accent-stamp: #92D698;
             --text-main: #5d4037;
             --line-color: #e0d7d3;
-            --lilla-bg: #f3e5f5;
-            --lilla-border: #ce93d8;
-            --lilla-text: #6a1b9a;
+            --header-green: #14b8a6;
+            --header-lilla: #DAA6FF;
+            --lilla-border: #7E4BA3;
         }
 
         body { 
@@ -21,34 +22,29 @@
             background: var(--bg-color); 
             color: var(--text-main);
             text-align: center; padding: 20px 10px; margin: 0; 
+            /* PUNTA AL TUO FILE CARICATO SU GITHUB */
+            cursor: url('cactus-cursor.png'), auto;
+        }
+        
+        button, label, input, a, .btn-status {
+            cursor: url('cactus-cursor.png'), pointer !important;
         }
 
-        header { 
-            background: rgba(255, 255, 255, 0.4); padding: 30px 20px; 
-            margin: 0 auto 30px; max-width: 800px; border-radius: 25px;
-            backdrop-filter: blur(5px);
-        }
+        header { margin: 0 auto 30px; max-width: 800px; }
 
-        .subtitle { font-size: 0.9rem; margin-top: 10px; opacity: 0.8; font-style: italic; }
+        .header-img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
 
         .grid { 
-            display: grid; 
-            column-gap: 25px; 
-            row-gap: 15px; 
-            margin: 0 auto; 
-            max-width: 1050px;
+            display: grid; gap: 20px; margin: 0 auto; max-width: 1100px;
             grid-template-columns: repeat(2, 1fr); 
-            justify-content: center;
-            padding: 10px;
         }
 
-        @media (min-width: 768px) { 
-            .grid { 
-                grid-template-columns: repeat(3, 1fr); 
-                column-gap: 35px;
-                row-gap: 25px; 
-            } 
-        }
+        @media (min-width: 768px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 30px; } }
 
         .status-check { display: none; }
 
@@ -57,11 +53,6 @@
             flex-direction: column; position: relative; border-radius: 25px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.05); transition: all 0.3s ease;
         }
-
-        .card:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-        }
         
         .book-box { 
             width: 100%; height: 250px; display: flex; align-items: center; 
@@ -69,9 +60,7 @@
             background: #fff; overflow: hidden; border-radius: 18px;
         }
 
-        .book-img { max-width: 85%; max-height: 85%; transition: 0.4s ease; }
-        .card:hover .book-img { transform: scale(1.05); }
-
+        .book-img { max-width: 85%; max-height: 85%; transition: 0.4s; }
         .card-divider { height: 1px; background-color: var(--line-color); margin: 15px 10px 10px 10px; }
 
         .status-badge {
@@ -94,15 +83,15 @@
 
         .controls { display: flex; gap: 5px; justify-content: center; margin-top: 10px; }
         .btn-status { 
-            font-size: 0.6rem; padding: 8px 4px; border-radius: 10px; 
-            cursor: pointer; border: 1px solid var(--line-color); background: white;
+            font-size: 0.6rem; padding: 6px 4px; border-radius: 10px; 
+            border: 1px solid var(--line-color); background: white;
             text-transform: uppercase; font-weight: bold; transition: 0.2s;
             flex: 1;
         }
 
         .rating-container { margin-top: 12px; display: none; justify-content: center; flex-direction: row-reverse; }
         .rating-container input { display: none; }
-        .rating-container label { font-size: 1.3rem; cursor: pointer; opacity: 0.2; filter: grayscale(1); transition: 0.2s; margin: 0 2px;}
+        .rating-container label { font-size: 1.3rem; opacity: 0.2; filter: grayscale(1); transition: 0.2s; margin: 0 2px;}
         .rating-container label:hover, .rating-container label:hover ~ label, .rating-container input:checked ~ label { opacity: 1; filter: grayscale(0); }
 
         .check-reading:checked ~ .card .stamp-reading { display: block; }
@@ -113,6 +102,7 @@
         .check-done:checked ~ .card .stamp-done { display: block; animation: stamp-anim 0.2s ease-out; }
         .check-done:checked ~ .card .book-img { opacity: 0.15; filter: grayscale(1) blur(1px); }
         .check-done:checked ~ .card .rating-container { display: flex; }
+        
         .check-done:checked ~ .card .btn-reading { display: none !important; }
         .check-done:checked ~ .card .btn-done { background: #c8e6c9; border-color: var(--accent-stamp); flex: none; width: 100%; }
 
@@ -121,38 +111,24 @@
             100% { transform: translate(-50%, -50%) rotate(-12deg) scale(1); opacity: 0.95; }
         }
 
-        /* BANNER FINALE LILLA AGGIORNATO */
         #final-prize { 
-            display: none; 
-            background: var(--lilla-bg); 
-            padding: 25px; 
-            margin: 0 auto 30px; 
-            border-radius: 20px; 
-            max-width: 800px; 
-            border: 3px dashed var(--lilla-border); 
-            color: var(--lilla-text);
-            font-weight: bold;
+            display: none; background: #e0f2f1; padding: 25px; margin: 0 auto 30px; 
+            border-radius: 20px; max-width: 800px; border: 3px dashed var(--header-green); 
+            color: var(--lilla-border); font-weight: bold;
+            box-shadow: 0 10px 20px rgba(20, 184, 166, 0.15);
         }
-        .prize-subtitle { display: block; font-size: 0.8rem; font-weight: normal; margin-top: 5px; opacity: 0.8; }
-
-        body:has(#done0:checked):has(#done1:checked):has(#done2:checked):has(#done3:checked):has(#done4:checked):has(#done5:checked) #final-prize { display: block !important; }
     </style>
 </head>
 <body>
 
     <header>
-        <span style="font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6;">Protocollo Clinico Cactus 2026</span>
-        <h1>REFLUSSI DI COSCIENZA</h1>
-        <div class="subtitle">Letture per persone con ansia che bevono comunque caffè</div>
+        <img src="header.png" alt="Reflusso di Coscienza" class="header-img">
     </header>
 
-    <div id="final-prize">
-        🏆 TUMMY ACHE SURVIVOR 🏆
-        <span class="prize-subtitle">Complimenti Cactus! Hai curato il 2026 con delle ottime letture.</span>
-    </div>
+    <div id="final-prize">🏆 TUMMY ACHE SURVIVOR 🏆</div>
 
     <div class="grid">
-        <div class="item">
+        <div class="card-container">
             <input type="checkbox" id="read0" class="status-check check-reading">
             <input type="checkbox" id="done0" class="status-check check-done">
             <div class="card">
@@ -162,7 +138,7 @@
                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXP_QZV5X-zRlrAgB0nkbBlzo1D6Yowwf3NQ&s" class="book-img">
                 </div>
                 <div class="card-divider"></div>
-                <div class="med-name">Figmed<sup>®</sup></div>
+                <div class="med-name">FIGMED<sup>®</sup></div>
                 <div class="med-period">Gennaio - Febbraio</div>
                 <div class="controls">
                     <label for="read0" class="btn-status btn-reading">📖 In lettura</label>
@@ -178,7 +154,7 @@
             </div>
         </div>
 
-        <div class="item">
+        <div class="card-container">
             <input type="checkbox" id="read1" class="status-check check-reading">
             <input type="checkbox" id="done1" class="status-check check-done">
             <div class="card">
@@ -204,7 +180,7 @@
             </div>
         </div>
 
-        <div class="item">
+        <div class="card-container">
             <input type="checkbox" id="read2" class="status-check check-reading">
             <input type="checkbox" id="done2" class="status-check check-done">
             <div class="card">
@@ -230,7 +206,7 @@
             </div>
         </div>
 
-        <div class="item">
+        <div class="card-container">
             <input type="checkbox" id="read3" class="status-check check-reading">
             <input type="checkbox" id="done3" class="status-check check-done">
             <div class="card">
@@ -256,7 +232,7 @@
             </div>
         </div>
 
-        <div class="item">
+        <div class="card-container">
             <input type="checkbox" id="read4" class="status-check check-reading">
             <input type="checkbox" id="done4" class="status-check check-done">
             <div class="card">
@@ -282,7 +258,7 @@
             </div>
         </div>
 
-        <div class="item">
+        <div class="card-container">
             <input type="checkbox" id="read5" class="status-check check-reading">
             <input type="checkbox" id="done5" class="status-check check-done">
             <div class="card">
@@ -309,12 +285,31 @@
         </div>
     </div>
 
-    <footer style="margin-top: 50px; opacity: 0.5; font-size: 0.7rem; padding-bottom: 30px; line-height: 1.5;">
+    <footer style="margin-top: 50px; opacity: 0.5; font-size: 0.7rem; padding-bottom: 30px; line-height: 1.2;">
         GDL JULIE DEMAR - 2026 🌵 <br>
-        <span style="font-size: 0.6rem;">I tuoi progressi sono salvati localmente sul tuo browser. Nessun dato viene raccolto, inviato a server o condiviso con terzi.</span>
+        <span style="font-size: 0.6rem;">I tuoi progressi sono salvati localmente sul browser.</span>
     </footer>
 
     <script>
+        function updateVictoryState() {
+            const allChecked = [0,1,2,3,4,5].every(i => document.getElementById('done' + i).checked);
+            const prizeElement = document.getElementById('final-prize');
+            
+            if (allChecked) {
+                if (prizeElement.style.display !== 'block') {
+                    prizeElement.style.display = 'block';
+                    confetti({
+                        particleCount: 200,
+                        spread: 90,
+                        origin: { y: 0.6 },
+                        colors: ['#14b8a6', '#DAA6FF', '#ffffff', '#92D698']
+                    });
+                }
+            } else {
+                prizeElement.style.display = 'none';
+            }
+        }
+
         function saveProgress() {
             const inputs = document.querySelectorAll('input');
             const status = {};
@@ -324,6 +319,7 @@
                 }
             });
             localStorage.setItem('gdl_2026_progress', JSON.stringify(status));
+            updateVictoryState();
         }
 
         function loadProgress() {
@@ -331,16 +327,14 @@
             if (savedStatus) {
                 Object.keys(savedStatus).forEach(id => {
                     const element = document.getElementById(id);
-                    if (element) {
-                        element.checked = savedStatus[id];
-                    }
+                    if (element) element.checked = savedStatus[id];
                 });
             }
+            updateVictoryState();
         }
 
         document.addEventListener('change', saveProgress);
         window.onload = loadProgress;
     </script>
-
 </body>
 </html>
