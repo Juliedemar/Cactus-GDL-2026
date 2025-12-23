@@ -29,11 +29,13 @@
         }
 
         /* HEADER DESKTOP */
-        header { 
-            margin: 40px auto 30px; 
-            max-width: 500px; 
-            padding: 0 10px;
-        }
+header { 
+    margin: 40px auto 30px; 
+    max-width: 500px; 
+    padding: 0 10px;
+    position: relative; /* Necessario per attivare lo z-index */
+    z-index: 100;       /* Lo porta in primo piano rispetto alle card */
+    }
 
         .header-img {
             width: 100%;
@@ -53,12 +55,14 @@
         }
 
         /* CORREZIONE MOBILE */
-        @media (max-width: 768px) {
-            header { margin: 10px auto 0px; }
-            .grid { margin-top: -20px; }
-            .med-period { margin-bottom: 15px !important; }
-        }
-
+@media (max-width: 768px) {
+    header {
+        margin: 10px auto 5px; /* Aumentato leggermente da 0 a 5px per non soffocare la scritta */
+    }
+    .grid {
+        margin-top: -15px; /* Ridotto leggermente (era -20) per non coprire il testo del logo */
+    }
+}
         @media (min-width: 768px) { 
             .grid { grid-template-columns: repeat(3, 1fr); gap: 30px; } 
         }
