@@ -252,6 +252,9 @@
             if (allChecked) {
                 prizeElement.style.display = 'block';
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#14b8a6', '#DAA6FF', '#ffffff'] });
+                
+                // Torna automaticamente in cima per mostrare il banner finale
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else { prizeElement.style.display = 'none'; }
         }
 
