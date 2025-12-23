@@ -29,13 +29,13 @@
         }
 
         /* HEADER DESKTOP */
-header { 
-    margin: 40px auto 30px; 
-    max-width: 500px; 
-    padding: 0 10px;
-    position: relative; /* Necessario per attivare lo z-index */
-    z-index: 100;       /* Lo porta in primo piano rispetto alle card */
-}
+        header { 
+            margin: 40px auto 30px; 
+            max-width: 500px; 
+            padding: 0 10px;
+            position: relative; /* Necessario per attivare lo z-index */
+            z-index: 100;       /* Lo porta in primo piano rispetto alle card */
+        }
 
         .header-img {
             width: 100%;
@@ -55,14 +55,14 @@ header {
         }
 
         /* CORREZIONE MOBILE */
-@media (max-width: 768px) {
-    header {
-        margin: 10px auto 5px; 
-    }
-    .grid {
-        margin-top: -15px; 
-    }
-}
+        @media (max-width: 768px) {
+            header {
+                margin: 10px auto 5px; 
+            }
+            .grid {
+                margin-top: -15px; 
+            }
+        }
         @media (min-width: 768px) { 
             .grid { grid-template-columns: repeat(3, 1fr); gap: 30px; } 
         }
@@ -136,11 +136,19 @@ header {
         .rating-container label { font-size: 1.3rem; opacity: 0.2; filter: grayscale(1); transition: 0.2s; margin: 0 2px;}
         .rating-container label:hover, .rating-container label:hover ~ label, .rating-container input:checked ~ label { opacity: 1; filter: grayscale(0); }
 
-        /* MODIFICA BANNER FINALE */
+        /* MODIFICA BANNER FINALE (Aggiunto stile immagine) */
         #final-prize { 
-            display: none; margin: 0 auto 30px; max-width: 600px; padding: 0 10px; 
+            display: none; 
+            margin: 0 auto 30px; 
+            max-width: 600px; 
+            padding: 0 10px; 
         }
-        .banner-img { width: 100%; height: auto; border-radius: 20px; }
+        .banner-img { 
+            width: 100%; 
+            height: auto; 
+            border-radius: 20px; 
+            display: block; 
+        }
 
         /* Stati */
         .check-reading:checked ~ .card .stamp-reading { display: block; }
@@ -218,7 +226,10 @@ header {
 
     <script>
         function updateVictoryState() {
-            const allChecked = [0,1,2,3,4,5].every(i => document.getElementById('done' + i).checked);
+            const allChecked = [0,1,2,3,4,5].every(i => {
+                const el = document.getElementById('done' + i);
+                return el && el.checked;
+            });
             const prizeElement = document.getElementById('final-prize');
             if (allChecked) {
                 prizeElement.style.display = 'block';
