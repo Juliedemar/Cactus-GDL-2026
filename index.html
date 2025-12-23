@@ -29,19 +29,18 @@ button, label, input, a, .btn-status, .rating-container label {
 }
         }
 
-  header { 
-    margin: 0 auto 30px; 
-    max-width: 1200px; /* Permette all'header di occupare tutta la larghezza */
-    height: 300px;   /* Altezza fissa richiesta */
-    overflow: hidden; 
+ header { 
+    margin: 10px auto 20px; 
+    max-width: 500px; /* Limitiamo la larghezza così non esplode su tutto lo schermo */
+    padding: 0 10px;
 }
 
 .header-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ritaglia l'immagine per riempire i 400px senza deformarsi */
-    object-position: center; /* Mantiene il centro dell'immagine visibile */
+    width: 100%;      /* Occupa i 500px definiti sopra */
+    height: 150px;    /* Altezza fissa molto più contenuta */
+    object-fit: contain; /* Fondamentale: mostra tutta l'immagine senza tagliarla */
     display: block;
+    margin: 0 auto;
 }
 
         .grid { display: grid; gap: 20px; margin: 0 auto; max-width: 1100px; grid-template-columns: repeat(2, 1fr); }
