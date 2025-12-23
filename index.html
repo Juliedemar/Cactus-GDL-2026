@@ -30,7 +30,7 @@
 
         /* HEADER DESKTOP */
         header { 
-            margin: 30px auto 50px; /* Aumentato il margine inferiore a 50px per staccarlo dalle card */
+            margin: 30px auto 50px; 
             max-width: 500px; 
             padding: 0 10px;
             position: relative;
@@ -59,13 +59,13 @@
         /* CORREZIONE MOBILE */
         @media (max-width: 768px) {
             header {
-                margin: 20px auto 40px; /* Margine generoso anche su mobile */
+                margin: 20px auto 40px; 
             }
             .grid {
-                margin-top: 0; /* Rimosso margine negativo per non schiacciare */
+                margin-top: 0; 
             }
             #final-prize { 
-                margin: -20px auto 40px !important; /* Il banner si "mangia" parte dello spazio vuoto quando appare */
+                margin: -20px auto 40px !important; 
             }
         }
 
@@ -150,25 +150,55 @@
         .rating-container label { font-size: 1.3rem; opacity: 0.2; filter: grayscale(1); transition: 0.2s; margin: 0 2px;}
         .rating-container label:hover, .rating-container label:hover ~ label, .rating-container input:checked ~ label { opacity: 1; filter: grayscale(0); }
 
-        /* BANNER FINALE */
+        /* BANNER FINALE CON EFFETTO GLITTER/SHIMMER */
         #final-prize { 
             display: none; 
-            margin: -30px auto 40px; /* Margine negativo per bilanciare lo spazio extra dell'header */
+            margin: -30px auto 40px; 
             max-width: 800px; 
             padding: 0 10px; 
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
         }
 
         .banner-img { 
             width: 100%; 
             height: auto; 
             display: block;
-            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
-            transition: transform 0.3s ease, filter 0.3s ease;
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        #final-prize::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 25%;
+            height: 200%;
+            background: linear-gradient(
+                to right, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.4) 50%, 
+                rgba(255,255,255,0) 100%
+            );
+            transform: rotate(30deg);
+            z-index: 2;
+            pointer-events: none;
+            animation: glitter-swipe 3s infinite linear;
+        }
+
+        @keyframes glitter-swipe {
+            0% { left: -60%; opacity: 0; }
+            10% { opacity: 0.8; }
+            25% { left: 120%; opacity: 0; }
+            100% { left: 120%; opacity: 0; }
         }
 
         .banner-img:hover {
-            transform: translateY(-5px);
-            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.15));
+            transform: translateY(-5px) scale(1.02);
+            filter: brightness(1.1) saturate(1.1);
         }
 
         /* Stati */
@@ -199,6 +229,7 @@
 
     <div class="grid">
         <script>
+            // Assicurati di caricare le immagini su GitHub per evitare blocchi da PC
             const books = [
                 { name: "FIGMED", period: "Gennaio - Febbraio", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXP_QZV5X-zRlrAgB0nkbBlzo1D6Yowwf3NQ&s", quote: "I will be a problem in every lifetime", presc: "In caso indecisione esistenziale acuta." },
                 { name: "Esistazol", period: "Marzo - Aprile", img: "https://www.ibs.it/images/9788806219192_0_0_0_0_0.jpg", quote: "Awake, but at what cost", presc: "In caso di rigetto improvviso della realtà." },
@@ -249,13 +280,21 @@
         function updateVictoryState() {
             const allChecked = [0,1,2,3,4,5].every(i => document.getElementById('done' + i).checked);
             const prizeElement = document.getElementById('final-prize');
+            
             if (allChecked) {
                 prizeElement.style.display = 'block';
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#14b8a6', '#DAA6FF', '#ffffff'] });
-                
-                // Torna automaticamente in cima per mostrare il banner finale
+                confetti({ 
+                    particleCount: 150, 
+                    spread: 70, 
+                    origin: { y: 0.6 }, 
+                    colors: ['#14b8a6', '#DAA6FF', '#ffffff'] 
+                });
+
+                // Scroll automatico al banner in cima
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else { prizeElement.style.display = 'none'; }
+            } else { 
+                prizeElement.style.display = 'none'; 
+            }
         }
 
         function saveProgress() {
