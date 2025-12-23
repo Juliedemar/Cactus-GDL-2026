@@ -28,7 +28,7 @@
             cursor: pointer !important;
         }
 
-        /* HEADER DESKTOP */
+        /* HEADER */
         header { 
             margin: 30px auto 50px; 
             max-width: 500px; 
@@ -56,17 +56,10 @@
             align-items: stretch;
         }
 
-        /* CORREZIONE MOBILE */
         @media (max-width: 768px) {
-            header {
-                margin: 20px auto 40px; 
-            }
-            .grid {
-                margin-top: 0; 
-            }
-            #final-prize { 
-                margin: -20px auto 40px !important; 
-            }
+            header { margin: 20px auto 40px; }
+            .grid { margin-top: 0; }
+            #final-prize { margin: -20px auto 40px !important; }
         }
 
         @media (min-width: 768px) { 
@@ -111,46 +104,18 @@
         .stamp-reading { color: #f57f17; border: 3px dashed #fbc02d; }
 
         .med-name { font-weight: 800; font-size: 0.9rem; text-transform: uppercase; margin: 0; }
-        
-        .med-period { 
-            font-size: 9px !important; 
-            text-transform: uppercase; 
-            opacity: 0.4; 
-            letter-spacing: 1.5px; 
-            margin-bottom: 10px;
-            display: block;
-            line-height: 1;
-        }
+        .med-period { font-size: 9px !important; text-transform: uppercase; opacity: 0.4; letter-spacing: 1.5px; margin-bottom: 10px; display: block; line-height: 1; }
+        .med-prescription { font-size: 0.75rem; font-style: italic; opacity: 0.8; margin-top: 0px; line-height: 1.3; min-height: 45px; display: flex; align-items: center; justify-content: center; }
 
-        .med-prescription { 
-            font-size: 0.75rem; 
-            font-style: italic; 
-            opacity: 0.8; 
-            margin-top: 0px; 
-            line-height: 1.3;
-            min-height: 45px; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .controls { 
-            display: flex; gap: 5px; justify-content: center; margin-top: auto;
-            padding-top: 10px;
-        }
-        .btn-status { 
-            font-size: 0.6rem; padding: 6px 4px; border-radius: 10px; 
-            border: 1px solid var(--line-color); background: white;
-            text-transform: uppercase; font-weight: bold; transition: 0.2s;
-            flex: 1;
-        }
+        .controls { display: flex; gap: 5px; justify-content: center; margin-top: auto; padding-top: 10px; }
+        .btn-status { font-size: 0.6rem; padding: 6px 4px; border-radius: 10px; border: 1px solid var(--line-color); background: white; text-transform: uppercase; font-weight: bold; transition: 0.2s; flex: 1; }
 
         .rating-container { margin-top: 12px; display: none; justify-content: center; flex-direction: row-reverse; }
         .rating-container input { display: none; }
         .rating-container label { font-size: 1.3rem; opacity: 0.2; filter: grayscale(1); transition: 0.2s; margin: 0 2px;}
         .rating-container label:hover, .rating-container label:hover ~ label, .rating-container input:checked ~ label { opacity: 1; filter: grayscale(0); }
 
-        /* BANNER FINALE CON EFFETTO GLITTER/SHIMMER */
+        /* BANNER FINALE CON EFFETTO GLITTER AUTOMATICO (PER MOBILE E PC) */
         #final-prize { 
             display: none; 
             margin: -30px auto 40px; 
@@ -165,40 +130,35 @@
             width: 100%; 
             height: auto; 
             display: block;
-            transition: transform 0.3s ease;
             position: relative;
             z-index: 1;
         }
 
+        /* La "lama di luce" glitterata */
         #final-prize::after {
             content: "";
             position: absolute;
             top: -50%;
-            left: -60%;
-            width: 25%;
+            left: -100%;
+            width: 30%;
             height: 200%;
             background: linear-gradient(
                 to right, 
                 rgba(255,255,255,0) 0%, 
-                rgba(255,255,255,0.4) 50%, 
+                rgba(255,255,255,0.6) 50%, 
                 rgba(255,255,255,0) 100%
             );
-            transform: rotate(30deg);
+            transform: rotate(25deg);
             z-index: 2;
             pointer-events: none;
-            animation: glitter-swipe 3s infinite linear;
+            /* L'animazione corre sempre, così si vede anche su mobile senza hover */
+            animation: glitter-swipe 4s infinite ease-in-out;
         }
 
         @keyframes glitter-swipe {
-            0% { left: -60%; opacity: 0; }
-            10% { opacity: 0.8; }
-            25% { left: 120%; opacity: 0; }
-            100% { left: 120%; opacity: 0; }
-        }
-
-        .banner-img:hover {
-            transform: translateY(-5px) scale(1.02);
-            filter: brightness(1.1) saturate(1.1);
+            0% { left: -100%; }
+            20% { left: 120%; } /* Passa velocemente all'inizio */
+            100% { left: 120%; } /* Pausa lunga prima del prossimo luccichio */
         }
 
         /* Stati */
@@ -229,7 +189,6 @@
 
     <div class="grid">
         <script>
-            // Assicurati di caricare le immagini su GitHub per evitare blocchi da PC
             const books = [
                 { name: "FIGMED", period: "Gennaio - Febbraio", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXP_QZV5X-zRlrAgB0nkbBlzo1D6Yowwf3NQ&s", quote: "I will be a problem in every lifetime", presc: "In caso indecisione esistenziale acuta." },
                 { name: "Esistazol", period: "Marzo - Aprile", img: "https://www.ibs.it/images/9788806219192_0_0_0_0_0.jpg", quote: "Awake, but at what cost", presc: "In caso di rigetto improvviso della realtà." },
@@ -280,21 +239,11 @@
         function updateVictoryState() {
             const allChecked = [0,1,2,3,4,5].every(i => document.getElementById('done' + i).checked);
             const prizeElement = document.getElementById('final-prize');
-            
             if (allChecked) {
                 prizeElement.style.display = 'block';
-                confetti({ 
-                    particleCount: 150, 
-                    spread: 70, 
-                    origin: { y: 0.6 }, 
-                    colors: ['#14b8a6', '#DAA6FF', '#ffffff'] 
-                });
-
-                // Scroll automatico al banner in cima
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#14b8a6', '#DAA6FF', '#ffffff'] });
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else { 
-                prizeElement.style.display = 'none'; 
-            }
+            } else { prizeElement.style.display = 'none'; }
         }
 
         function saveProgress() {
