@@ -44,28 +44,37 @@
 
         .status-check { display: none; }
 
+        /* ANIMAZIONE CARD */
         .card { 
             background: var(--card-bg); padding: 20px; display: flex; 
             flex-direction: column; position: relative; border-radius: 25px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05); transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05); 
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+            cursor: pointer;
         }
         
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
         .book-box { 
             width: 100%; height: 250px; display: flex; align-items: center; 
             justify-content: center; position: relative; 
             background: #fff; overflow: hidden; border-radius: 18px;
         }
 
-        .book-img { max-width: 85%; max-height: 85%; transition: 0.4s; }
+        .book-img { max-width: 85%; max-height: 85%; transition: transform 0.5s ease, filter 0.5s ease; }
+        .card:hover .book-img { transform: scale(1); }
+
         .card-divider { height: 1px; background-color: var(--line-color); margin: 15px 10px; }
 
-        /* DATA: Forzata a 9px e con 30px di spazio sotto */
         .med-period { 
             font-size: 9px !important; 
             text-transform: uppercase; 
             opacity: 0.4; 
             letter-spacing: 1.5px; 
-            margin-bottom: 15px; 
+            margin-bottom: 30px; 
             display: block;
             line-height: 1;
         }
@@ -88,6 +97,7 @@
             line-height: 1.2; background: rgba(255, 255, 255, 0.96);
             display: none; z-index: 10; width: 80%;
             pointer-events: none;
+            transition: all 0.3s ease;
         }
 
         .stamp-done { color: var(--accent-stamp); border: 3px double var(--accent-stamp); }
@@ -98,21 +108,31 @@
             font-size: 0.6rem; padding: 8px 4px; border-radius: 10px; 
             border: 1px solid var(--line-color); background: white;
             text-transform: uppercase; font-weight: bold; cursor: pointer; flex: 1;
+            transition: background 0.2s;
         }
+        .btn-status:hover { background: #f0f0f0; }
 
         .rating-container { margin-top: 12px; display: none; justify-content: center; flex-direction: row-reverse; }
         .rating-container input { display: none; }
-        .rating-container label { font-size: 1.3rem; opacity: 0.2; filter: grayscale(1); cursor: pointer; margin: 0 2px;}
+        .rating-container label { font-size: 1.3rem; opacity: 0.2; filter: grayscale(1); cursor: pointer; margin: 0 2px; transition: transform 0.2s ease;}
+        .rating-container label:hover { transform: scale(1.2); }
         .rating-container label:hover, .rating-container label:hover ~ label, .rating-container input:checked ~ label { opacity: 1; filter: grayscale(0); }
 
+        /* Stati di attivazione */
         .check-reading:checked ~ .card .stamp-reading { display: block; }
         .check-reading:checked ~ .card .book-img { filter: sepia(0.5); opacity: 0.6; }
-        .check-done:checked ~ .card { background: #e8f5e9; }
-        .check-done:checked ~ .card .stamp-done { display: block; }
+        
+        .check-done:checked ~ .card { background: #e8f5e9; transform: none !important; }
+        .check-done:checked ~ .card .stamp-done { display: block; animation: stampAppear 0.3s ease-out; }
         .check-done:checked ~ .card .book-img { opacity: 0.15; filter: grayscale(1) blur(1px); }
         .check-done:checked ~ .card .rating-container { display: flex; }
         .check-done:checked ~ .card .btn-reading { display: none; }
         .check-done:checked ~ .card .btn-done { background: #c8e6c9; border-color: var(--accent-stamp); width: 100%; flex: none; }
+
+        @keyframes stampAppear {
+            0% { transform: translate(-50%, -50%) rotate(-12deg) scale(2); opacity: 0; }
+            100% { transform: translate(-50%, -50%) rotate(-12deg) scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -121,14 +141,14 @@
         <img src="header.png" alt="Reflusso di Coscienza" class="header-img">
     </header>
 
-    <div id="final-prize" style="display:none; background:#e0f2f1; padding:25px; border-radius:20px; max-width:800px; margin: 0 auto 30px; border:3px dashed var(--accent-stamp); color:var(--header-lilla); font-weight:bold;">
+    <div id="final-prize" style="display:none; background:#e0f2f1; padding:25px; border-radius:20px; max-width:800px; margin: 0 auto 30px; border:3px dashed var(--accent-stamp); color:var(--text-main); font-weight:bold;">
         🏆 TUMMY ACHE SURVIVOR 🏆
     </div>
 
     <div class="grid">
         <script>
             const books = [
-                { name: "FIGMED", period: "Gennaio - Febbraio", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXP_QZV5X-zRlrAgB0nkbBlzo1D6Yowwf3NQ&s", quote: "I will be a problem in every lifetime", presc: "In caso di indecisione esistenziale e sensazione di soffocamento." },
+                { name: "FIGMED", period: "Gennaio - Febbraio", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXP_QZV5X-zRlrAgB0nkbBlzo1D6Yowwf3NQ&s", quote: "I will be a problem in every lifetime", presc: "In caso di “potrei essere tutto ma sono bloccata nel nulla”." },
                 { name: "Esistazol", period: "Marzo - Aprile", img: "https://www.ibs.it/images/9788806219192_0_0_0_0_0.jpg", quote: "Awake, but at what cost", presc: "In caso di rigetto improvviso della realtà." },
                 { name: "Identiflux", period: "Maggio - Giugno", img: "https://m.media-amazon.com/images/I/61lME-Io+HL._AC_UF1000,1000_QL80_.jpg", quote: "Sorry for not texting back", presc: "In caso di emozioni nascoste sotto strati di normalità." },
                 { name: "Socialex", period: "Luglio - Agosto", img: "https://m.media-amazon.com/images/I/616sEwW93PL.jpg", quote: "Don’t mess with me", presc: "In caso di senso di colpa preinstallato, motivo sconosciuto." },
@@ -182,11 +202,11 @@
         function saveProgress() {
             const status = {};
             document.querySelectorAll('input').forEach(input => { if(input.id) status[input.id] = input.checked; });
-            localStorage.setItem('gdl_2026_vFinal', JSON.stringify(status));
+            localStorage.setItem('gdl_2026_vFinal_anim', JSON.stringify(status));
             updateVictoryState();
         }
         function loadProgress() {
-            const saved = JSON.parse(localStorage.getItem('gdl_2026_vFinal'));
+            const saved = JSON.parse(localStorage.getItem('gdl_2026_vFinal_anim'));
             if (saved) { Object.keys(saved).forEach(id => { const el = document.getElementById(id); if (el) el.checked = saved[id]; }); }
             updateVictoryState();
         }
